@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObject;
 
-class CountryId extends AbstractId
+class Id extends AbstractId
 {
 
 }

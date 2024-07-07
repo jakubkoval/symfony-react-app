@@ -1,0 +1,41 @@
+default:
+    path: /
+    controller: App\UserInterface\Symfony\Http\Controller\DefaultController::defaultAction
+
+about:
+    path: /about
+    controller: App\UserInterface\Symfony\Http\Controller\DefaultController::defaultAction
+
+#chart:
+#    path: /chart
+#    controller: App\UserInterface\Symfony\Http\Controller\DefaultController::defaultAction
+
+getChartData:
+    path: /get-chart-data
+    controller: App\UserInterface\Symfony\Rest\Controller\GetChartDataController
+    methods: [ 'GET' ]
+
+userData:
+    path: /user-data/{id}
+    controller: App\UserInterface\Symfony\Rest\Controller\GetUserDataController
+    methods: [ 'GET' ]
+
+countries:
+    path: /countries
+    controller: App\UserInterface\Symfony\Rest\Controller\GetListOfCountries
+    methods: [ 'GET' ]
+
+addUser:
+    path: /user/add
+    controller: App\UserInterface\Symfony\Rest\Controller\User\AddUserController
+    methods: [ 'POST' ]
+
+editUser:
+    path: /user/edit/{id}
+    controller: App\UserInterface\Symfony\Rest\Controller\User\EditUserController
+    methods: [ 'POST' ]
+
+deleteUser:
+    path: /user/delete/{id}
+    controller: App\UserInterface\Symfony\Rest\Controller\User\DeleteUserController
+    methods: [ 'DELETE' ]
