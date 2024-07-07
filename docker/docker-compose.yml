@@ -21,6 +21,8 @@ services:
       MYSQL_PASSWORD: userpass
     ports:
       - "3306:3306"
+    volumes:
+      - ./my-init-scripts:/docker-entrypoint-initdb.d/:ro
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
