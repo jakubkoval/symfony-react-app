@@ -1,0 +1,5 @@
+export const NAME_VALIDATION_MESSAGE = 'First name can not be empty.'
+export const LAST_NAME_VALIDATION_MESSAGE = 'Last name can not be empty.'
+export const DATE_OF_BIRTH_VALIDATION_MESSAGE = 'Date of birth can not be empty.'
+export const INVALID_DATE_OF_BIRTH_VALIDATION_MESSAGE = 'Date of birth can not be empty.'
+export const COUNTRY_VALIDATION_MESSAGE = 'Date of birth can not be empty.'

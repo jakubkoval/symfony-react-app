@@ -1,15 +1,35 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Paper from "@mui/material/Paper";
 import {Button, ButtonGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditUserForm from "./EditUserForm";
+import axios from "axios";
 
-export default function UserList({users, handleOpenEditForm}) {
+export default function UserList({users, countries}) {
+
+    const [openEditForm, setOpenEditForm] = useState(false);
+    const [userDataToEdit, setUserDataToEdit] = useState({});
+
     const handleEditClick = (event, id) => {
-        handleOpenEditForm(id);
+        // handleOpenEditForm(id);
         console.log(event.currentTarget);
+
+        axios.get(`/user-data/${id}`)
+            .then((response) => {
+                console.log(response.data);
+                setUserDataToEdit(response.data);
+
+                setOpenEditForm(!openEditForm);
+            })
+            .catch(() => {
+                //show alert or something
+            })
         event.stopPropagation();
+    }
+
+    function handleOpenEditForm() {
+        setOpenEditForm(!openEditForm);
     }
 
     return (
@@ -51,6 +71,12 @@ export default function UserList({users, handleOpenEditForm}) {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <EditUserForm
+                open={openEditForm}
+                countries={countries}
+                dataToEdit={userDataToEdit}
+                handleOpenEditForm={handleOpenEditForm}
+            />
         </>
     );
 }

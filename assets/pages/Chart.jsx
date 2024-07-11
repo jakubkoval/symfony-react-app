@@ -11,7 +11,6 @@ import UserList from "../components/UserList";
 import AddIcon from "@mui/icons-material/Add";
 import AddUserForm from "../components/AddUserForm";
 import axios from "axios";
-import EditUserForm from "../components/EditUserForm";
 
 export default function Chart() {
     const DATE_FORMAT = 'YYYY-MM-DD';
@@ -21,9 +20,8 @@ export default function Chart() {
     const [chartData, setChartData] = useState([]);
     const [users, setUsers] = useState([]);
     const [openAddForm, setOpenAddForm] = useState(false);
-    const [openEditForm, setOpenEditForm] = useState(false);
     const [countries, setCountries] = useState([]);
-    const [userDataToEdit, setUserDataToEdit] = useState({})
+    const [countOfChangedUsers, setCountOfChangedUsers] = useState(0);
 
     let urlParams = new URLSearchParams({});
     if (dateFrom !== '' && dateTo !== '') {
@@ -39,10 +37,11 @@ export default function Chart() {
                 return response.json()
             })
             .then((data) => {
+                // console.log(data);
                 setChartData(data.counts);
                 setUsers(data.users);
             })
-    }, [dateFrom, dateTo]);
+    }, [dateFrom, dateTo, countOfChangedUsers]);
 
     useEffect(() => {
         axios.get('/countries')
@@ -50,6 +49,18 @@ export default function Chart() {
                 setCountries(response.data);
             })
     }, []);
+
+    useEffect(() => {
+        const listener = () => {setCountOfChangedUsers(countOfChangedUsers + 1)};
+
+        addEventListener('userAdded', listener);
+        addEventListener('userEdited', listener);
+
+        return () => {
+            removeEventListener('userAdded', listener);
+            removeEventListener('userEdited', listener);
+        }
+    });
 
     function changeDateFrom(value) {
         setDateFrom(value)
@@ -61,20 +72,6 @@ export default function Chart() {
 
     function handleOpenAddForm() {
         setOpenAddForm(!openAddForm);
-    }
-
-    function handleOpenEditForm(id) {
-
-        axios.get(`/user-data/${id}`)
-            .then((response) => {
-                console.log(response.data);
-                setUserDataToEdit(response.data);
-
-                setOpenEditForm(!openEditForm);
-            })
-            .catch(() => {
-                //show alert or something
-            })
     }
 
     return (
@@ -101,7 +98,7 @@ export default function Chart() {
                             <PieChart chartData={chartData}/>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6}>
-                            <UserList users={users} handleOpenEditForm={handleOpenEditForm}/>
+                            <UserList users={users} countries={countries} />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12}>
                             <Fab className="fab" size="medium" color="secondary" aria-label="add"
@@ -116,12 +113,6 @@ export default function Chart() {
                         open={openAddForm}
                         countries={countries}
                         handleOpenAddForm={handleOpenAddForm}
-                    />
-                    <EditUserForm
-                        open={openEditForm}
-                        countries={countries}
-                        handleOpenEditForm={handleOpenEditForm}
-                        dataToEdit={userDataToEdit}
                     />
                 </Box>
             </Box>
