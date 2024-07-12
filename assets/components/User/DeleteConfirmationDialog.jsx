@@ -1,8 +1,12 @@
-import React from 'react';
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import React, {useContext} from 'react';
+import {Button, Dialog, DialogActions, DialogTitle} from "@mui/material";
 import axios from "axios";
+import SnackBarContext from "../Snackbars/SnackBarContext";
 
 export default function DeleteConfirmationDialog({open, handleOpenConfirmationDialog, userIdToDelete}) {
+
+    const snackBarContext = useContext(SnackBarContext);
+
     function handleClose() {
         handleOpenConfirmationDialog();
     }
@@ -11,6 +15,7 @@ export default function DeleteConfirmationDialog({open, handleOpenConfirmationDi
         axios.delete(`/user/delete/${userIdToDelete}`)
             .then((response) => {
                 handleOpenConfirmationDialog();
+                snackBarContext.setSnackData('User has been deleted.');
                 window.dispatchEvent(new Event('userListChanged'));
             })
             .catch(() => {
