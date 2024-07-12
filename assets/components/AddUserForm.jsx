@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
     Button,
     Dialog,
@@ -11,15 +11,16 @@ import {
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import axios from "axios";
-import dayjs from "dayjs";
 import * as validationConstants from "../config/userFormValidationMessages";
+import SnackBarContext from "./Snackbars/SnackBarContext";
 
 export default function AddUserForm({open, countries, handleOpenAddForm}) {
     const [countryId, setCountryId] = useState('');
     const [isNameFilled, setIsNameFilled] = useState(false);
     const [isLastNameFilled, setIsLastNameFilled] = useState(false);
     const [dateOfBirthError, setDateOfBirthError] = useState('');
-    const [isCountryFilled, setIsCountryFilled] = useState(true);
+
+    const snackBarContext = useContext(SnackBarContext);
 
     const handleNameChange = (e) => {
         if (e.target.validity.valid) {
@@ -60,13 +61,12 @@ export default function AddUserForm({open, countries, handleOpenAddForm}) {
 
         const formData = new FormData(event.currentTarget);
         const formJson = Object.fromEntries(formData.entries());
-        console.log(formJson);
 
         axios.post('/user/add', formJson)
             .then(function (response) {
-                console.log(response);
                 handleOpenAddForm();
-                window.dispatchEvent(new Event('userAdded'));
+                snackBarContext.setSnackData('User has been added.');
+                window.dispatchEvent(new Event('userListChanged'));
             })
             .catch(function (error) {
                 console.log(error);

@@ -53,12 +53,10 @@ export default function Chart() {
     useEffect(() => {
         const listener = () => {setCountOfChangedUsers(countOfChangedUsers + 1)};
 
-        addEventListener('userAdded', listener);
-        addEventListener('userEdited', listener);
+        addEventListener('userListChanged', listener);
 
         return () => {
-            removeEventListener('userAdded', listener);
-            removeEventListener('userEdited', listener);
+            removeEventListener('userListChanged', listener);
         }
     });
 

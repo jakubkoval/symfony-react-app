@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
     Button,
     Dialog,
@@ -12,9 +12,11 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import axios from "axios";
 import dayjs from "dayjs";
+import SnackBarContext from "./Snackbars/SnackBarContext";
 
 export default function AddUserForm({open, countries, handleOpenEditForm, dataToEdit}) {
     const [countryId, setCountryId] = useState('');
+    const snackBarContext = useContext(SnackBarContext);
 
     function handleChangeSelect(event) {
         setCountryId(event.target.value);
@@ -25,12 +27,12 @@ export default function AddUserForm({open, countries, handleOpenEditForm, dataTo
 
         const formData = new FormData(event.currentTarget);
         const formJson = Object.fromEntries(formData.entries());
-// console.log(formJson);return;
+
         axios.post("/user/edit/" + formJson.id, formJson)
             .then(function (response) {
-                console.log(response);
                 handleOpenEditForm();
-                window.dispatchEvent(new Event('userEdited'));
+                snackBarContext.setSnackData('User has been changed.');
+                window.dispatchEvent(new Event('userListChanged'));
             })
             .catch(function (error) {
                 console.log(error);

@@ -5,19 +5,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditUserForm from "./EditUserForm";
 import axios from "axios";
+import DeleteConfirmationDialog from "./User/DeleteConfirmationDialog";
 
 export default function UserList({users, countries}) {
 
     const [openEditForm, setOpenEditForm] = useState(false);
+    const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     const [userDataToEdit, setUserDataToEdit] = useState({});
+    const [userIdToDelete, setUserIdToDelete] = useState(null);
 
     const handleEditClick = (event, id) => {
-        // handleOpenEditForm(id);
-        console.log(event.currentTarget);
-
         axios.get(`/user-data/${id}`)
             .then((response) => {
-                console.log(response.data);
                 setUserDataToEdit(response.data);
 
                 setOpenEditForm(!openEditForm);
@@ -26,6 +25,16 @@ export default function UserList({users, countries}) {
                 //show alert or something
             })
         event.stopPropagation();
+    }
+
+    function handleRemoveClick(event, id) {
+        setOpenConfirmationDialog(!openConfirmationDialog);
+        setUserIdToDelete(id);
+        event.stopPropagation();
+    }
+
+    function handleOpenConfirmationDialog() {
+        setOpenConfirmationDialog(!open);
     }
 
     function handleOpenEditForm() {
@@ -62,8 +71,8 @@ export default function UserList({users, countries}) {
                                 <TableCell align="right">{row.country}</TableCell>
                                 <TableCell align="right">
                                     <ButtonGroup variant="text" aria-label="Basic button group">
-                                        <Button><EditIcon onClick={(event) => handleEditClick(event, row.id)}/></Button>
-                                        <Button><DeleteIcon/></Button>
+                                        <Button onClick={(event) => handleEditClick(event, row.id)}><EditIcon/></Button>
+                                        <Button onClick={(event) => handleRemoveClick(event, row.id)}><DeleteIcon/></Button>
                                     </ButtonGroup>
                                 </TableCell>
                             </TableRow>
@@ -76,6 +85,11 @@ export default function UserList({users, countries}) {
                 countries={countries}
                 dataToEdit={userDataToEdit}
                 handleOpenEditForm={handleOpenEditForm}
+            />
+            <DeleteConfirmationDialog
+                open={openConfirmationDialog}
+                handleOpenConfirmationDialog={handleOpenConfirmationDialog}
+                userIdToDelete={userIdToDelete}
             />
         </>
     );

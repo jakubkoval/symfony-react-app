@@ -8,7 +8,6 @@ use App\Application\Query\DoesUserExistQueryInterface;
 use App\Application\Request\UserIdRequest;
 use App\Application\Service\UserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeleteUserController
@@ -17,9 +16,9 @@ class DeleteUserController
         private UserService $userService,
         private DoesUserExistQueryInterface $doesUserExistQuery
     ) {}
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(int $id): JsonResponse
     {
-        $userIdRequest = new UserIdRequest($request->get('id'));
+        $userIdRequest = new UserIdRequest($id);
 
         $userExist = $this->doesUserExistQuery->__invoke($userIdRequest);
 

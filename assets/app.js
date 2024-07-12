@@ -7,6 +7,7 @@ import Chart from "./pages/Chart";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import About from "./pages/About";
 import Layout from "./layout/Layout";
+import {SnackBarContextProvider} from "./components/Snackbars/SnackBarContext";
 
 const router = createBrowserRouter([
     {
@@ -22,7 +23,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         {/*<Layout>*/}
+        <SnackBarContextProvider>
             <RouterProvider router={router}/>
+        </SnackBarContextProvider>
         {/*</Layout>*/}
     </React.StrictMode>
 );
