@@ -5,6 +5,8 @@ git clone
 cd symfony-react-app
 cd docker
 
+docker-compose up -d
+
 docker exec -it php-app bash -c "composer install"
 
 docker exec -it php-app bash -c "npm install"
