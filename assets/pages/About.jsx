@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Sidebar from "../components/SidebarNew";
+import Sidebar from "../components/Sidebar";
 import Box from '@mui/material/Box';
 import CssBaseline from "@mui/material/CssBaseline";
 import {Typography} from "@mui/material";

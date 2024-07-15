@@ -4,7 +4,7 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import 'dayjs/locale/de';
 import PieChart from "../components/PieChart";
-import Sidebar from "../components/SidebarNew";
+import Sidebar from "../components/Sidebar";
 import Box from '@mui/material/Box';
 import CssBaseline from "@mui/material/CssBaseline";
 import UserList from "../components/UserList";
