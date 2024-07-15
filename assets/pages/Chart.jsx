@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {Fab, Grid} from "@mui/material";
-import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import 'dayjs/locale/de';
 import PieChart from "../components/PieChart";
 import Sidebar from "../components/Sidebar";
@@ -11,11 +9,9 @@ import UserList from "../components/UserList";
 import AddIcon from "@mui/icons-material/Add";
 import AddUserForm from "../components/AddUserForm";
 import axios from "axios";
-import dayjs from "dayjs";
+import DefaultDatepicker from "../components/DatePicker/DefaultDatepicker";
 
 export default function Chart() {
-    const DATE_FORMAT = 'YYYY-MM-DD';
-
     const [dateFrom, setDateFrom] = useState(null);
     const [dateTo, setDateTo] = useState(null);
     const [chartData, setChartData] = useState([]);
@@ -23,8 +19,6 @@ export default function Chart() {
     const [openAddForm, setOpenAddForm] = useState(false);
     const [countries, setCountries] = useState([]);
     const [countOfChangedUsers, setCountOfChangedUsers] = useState(0);
-    const [dateToErrorText, setDateToErrorText] = useState('');
-    const [dateFromErrorText, setDateFromErrorText] = useState('');
 
     useEffect(() => {
         let urlSearchParams = new URLSearchParams({});
@@ -61,28 +55,16 @@ export default function Chart() {
         }
     });
 
+    function handleOpenAddForm() {
+        setOpenAddForm(!openAddForm);
+    }
+
     function changeDateFrom(value) {
-        if (value.isValid()) {
-            setDateFrom(value.format(DATE_FORMAT));
-            setDateFromErrorText('');
-        } else {
-            setDateFrom(null);
-            setDateFromErrorText('Invalid Date from value');
-        }
+        setDateFrom(value);
     }
 
     function changeDateTo(value) {
-        if (value.isValid()) {
-            setDateTo(value.format(DATE_FORMAT));
-            setDateToErrorText('');
-        } else {
-            setDateTo(null);
-            setDateToErrorText('Invalid Date to value')
-        }
-    }
-
-    function handleOpenAddForm() {
-        setOpenAddForm(!openAddForm);
+        setDateTo(value);
     }
 
     return (
@@ -94,37 +76,10 @@ export default function Chart() {
                     <h2>Chart</h2>
                     <Grid container spacing={1} rowSpacing={3}>
                         <Grid item xs={12} sm={6} md={4}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DatePicker
-                                    label="Date from"
-                                    onChange={(value) => changeDateFrom(value)}
-                                    closeOnSelect={true}
-                                    slotProps={
-                                        {
-                                            textField: {
-                                                helperText: dateFromErrorText,
-                                            }
-                                        }
-                                    }
-                                />
-                            </LocalizationProvider>
+                            <DefaultDatepicker label="Date from" handleDate={changeDateFrom} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DatePicker
-                                    label="Date to"
-                                    onChange={(value) => changeDateTo(value)}
-                                    minDate={dateFrom != null ? dayjs(dateFrom) : null}
-                                    closeOnSelect={true}
-                                    slotProps={
-                                        {
-                                            textField: {
-                                                helperText: dateToErrorText,
-                                            }
-                                        }
-                                    }
-                                />
-                            </LocalizationProvider>
+                            <DefaultDatepicker label="Date To" handleDate={changeDateTo} />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6}>
                             <PieChart chartData={chartData}/>
