@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {
     Button,
     Dialog,
@@ -13,14 +13,44 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import axios from "axios";
 import dayjs from "dayjs";
 import SnackBarContext from "./Snackbars/SnackBarContext";
+import * as validationConstants from "../config/userFormValidationMessages";
 
 export default function AddUserForm({open, countries, handleOpenEditForm, dataToEdit}) {
-    const [countryId, setCountryId] = useState('');
     const snackBarContext = useContext(SnackBarContext);
 
-    function handleChangeSelect(event) {
-        setCountryId(event.target.value);
-    }
+    const [isNameFilled, setIsNameFilled] = useState(false);
+    const [isLastNameFilled, setIsLastNameFilled] = useState(false);
+    const [dateOfBirthError, setDateOfBirthError] = useState('');
+
+    const handleNameChange = (e) => {
+        if (e.target.validity.valid) {
+            setIsNameFilled(false);
+        } else {
+            setIsNameFilled(true);
+        }
+    };
+
+    const handleLastNameChange = (e) => {
+        if (e.target.validity.valid) {
+            setIsLastNameFilled(false);
+        } else {
+            setIsLastNameFilled(true);
+        }
+    };
+
+    const dateOfBirthErrorMessage = React.useMemo(() => {
+        switch (dateOfBirthError) {
+            case 'maxDate':
+            case 'minDate':
+            case 'invalidDate': {
+                return validationConstants.INVALID_DATE_OF_BIRTH_VALIDATION_MESSAGE;
+            }
+
+            default: {
+                return '';
+            }
+        }
+    }, [dateOfBirthError]);
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -62,6 +92,9 @@ export default function AddUserForm({open, countries, handleOpenEditForm, dataTo
                             label="First Name"
                             type="text"
                             variant="outlined"
+                            onChange={handleNameChange}
+                            error={isNameFilled}
+                            helperText={isNameFilled ? validationConstants.NAME_VALIDATION_MESSAGE : ""}
                             fullWidth
                             defaultValue={dataToEdit.first_name}
                         />
@@ -75,6 +108,9 @@ export default function AddUserForm({open, countries, handleOpenEditForm, dataTo
                             label="Last Name"
                             type="text"
                             variant="outlined"
+                            onChange={handleLastNameChange}
+                            error={isLastNameFilled}
+                            helperText={isLastNameFilled ? validationConstants.LAST_NAME_VALIDATION_MESSAGE : ""}
                             fullWidth
                             defaultValue={dataToEdit.last_name}
                         />
@@ -84,7 +120,18 @@ export default function AddUserForm({open, countries, handleOpenEditForm, dataTo
                             <DatePicker
                                 label="Date of Birth"
                                 name="date_of_birth"
-                                slotProps={{textField: {fullWidth: true, required: true, margin: 'dense'}}}
+                                disableFuture={true}
+                                onError={(error) => {setDateOfBirthError(error)}}
+                                slotProps={
+                                    {
+                                        textField: {
+                                            fullWidth: true,
+                                            required: true,
+                                            margin: 'dense',
+                                            helperText: dateOfBirthErrorMessage
+                                        }
+                                    }
+                                }
                                 defaultValue={dayjs(dataToEdit.date_of_birth)}
                             />
                         </LocalizationProvider>
@@ -95,11 +142,9 @@ export default function AddUserForm({open, countries, handleOpenEditForm, dataTo
                             labelId="country-id-label"
                             id="country-select"
                             name="country_id"
-                            // value={countryId}
                             label="Country"
                             margin="dense"
                             defaultValue={dataToEdit.country_id}
-                            onChange={handleChangeSelect}
                         >
                             {countries.map((data) => {
                                 return <MenuItem key={data.id} value={data.id}>{data.name}</MenuItem>

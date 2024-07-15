@@ -11,35 +11,36 @@ import UserList from "../components/UserList";
 import AddIcon from "@mui/icons-material/Add";
 import AddUserForm from "../components/AddUserForm";
 import axios from "axios";
+import dayjs from "dayjs";
 
 export default function Chart() {
     const DATE_FORMAT = 'YYYY-MM-DD';
 
-    const [dateFrom, setDateFrom] = useState('');
-    const [dateTo, setDateTo] = useState('');
+    const [dateFrom, setDateFrom] = useState(null);
+    const [dateTo, setDateTo] = useState(null);
     const [chartData, setChartData] = useState([]);
     const [users, setUsers] = useState([]);
     const [openAddForm, setOpenAddForm] = useState(false);
     const [countries, setCountries] = useState([]);
     const [countOfChangedUsers, setCountOfChangedUsers] = useState(0);
-
-    let urlParams = new URLSearchParams({});
-    if (dateFrom !== '' && dateTo !== '') {
-        urlParams = new URLSearchParams({
-            dateFrom: dateFrom,
-            dateTo: dateTo,
-        });
-    }
+    const [dateToErrorText, setDateToErrorText] = useState('');
+    const [dateFromErrorText, setDateFromErrorText] = useState('');
 
     useEffect(() => {
-        fetch('/get-chart-data?' + urlParams.toString(), {method: 'GET'})
+        let urlSearchParams = new URLSearchParams({});
+
+        if (dateFrom !== null) {
+            urlSearchParams.append('dateFrom', dateFrom);
+        }
+
+        if (dateTo !== null) {
+            urlSearchParams.append('dateTo', dateTo);
+        }
+
+        axios.get('/get-chart-data?' + urlSearchParams.toString())
             .then((response) => {
-                return response.json()
-            })
-            .then((data) => {
-                // console.log(data);
-                setChartData(data.counts);
-                setUsers(data.users);
+                setChartData(response.data?.counts || []);
+                setUsers(response.data?.users || []);
             })
     }, [dateFrom, dateTo, countOfChangedUsers]);
 
@@ -61,11 +62,23 @@ export default function Chart() {
     });
 
     function changeDateFrom(value) {
-        setDateFrom(value)
+        if (value.isValid()) {
+            setDateFrom(value.format(DATE_FORMAT));
+            setDateFromErrorText('');
+        } else {
+            setDateFrom(null);
+            setDateFromErrorText('Invalid Date from value');
+        }
     }
 
     function changeDateTo(value) {
-        setDateTo(value);
+        if (value.isValid()) {
+            setDateTo(value.format(DATE_FORMAT));
+            setDateToErrorText('');
+        } else {
+            setDateTo(null);
+            setDateToErrorText('Invalid Date to value')
+        }
     }
 
     function handleOpenAddForm() {
@@ -82,20 +95,41 @@ export default function Chart() {
                     <Grid container spacing={1} rowSpacing={3}>
                         <Grid item xs={12} sm={6} md={4}>
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DatePicker label="Date from"
-                                            onChange={(value) => changeDateFrom(value.format(DATE_FORMAT))}/>
+                                <DatePicker
+                                    label="Date from"
+                                    onChange={(value) => changeDateFrom(value)}
+                                    closeOnSelect={true}
+                                    slotProps={
+                                        {
+                                            textField: {
+                                                helperText: dateFromErrorText,
+                                            }
+                                        }
+                                    }
+                                />
                             </LocalizationProvider>
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DatePicker label="Date to"
-                                            onChange={(value) => changeDateTo(value.format(DATE_FORMAT))}/>
+                                <DatePicker
+                                    label="Date to"
+                                    onChange={(value) => changeDateTo(value)}
+                                    minDate={dateFrom != null ? dayjs(dateFrom) : null}
+                                    closeOnSelect={true}
+                                    slotProps={
+                                        {
+                                            textField: {
+                                                helperText: dateToErrorText,
+                                            }
+                                        }
+                                    }
+                                />
                             </LocalizationProvider>
                         </Grid>
-                        <Grid item xs={12} sm={6} md={6}>
+                        <Grid item xs={12} sm={12} md={6}>
                             <PieChart chartData={chartData}/>
                         </Grid>
-                        <Grid item xs={12} sm={6} md={6}>
+                        <Grid item xs={12} sm={12} md={6}>
                             <UserList users={users} countries={countries} />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12}>

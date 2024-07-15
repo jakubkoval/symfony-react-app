@@ -14,6 +14,8 @@ export default function UserList({users, countries}) {
     const [userDataToEdit, setUserDataToEdit] = useState({});
     const [userIdToDelete, setUserIdToDelete] = useState(null);
 
+    const hasUsers = users.length > 0;
+
     const handleEditClick = (event, id) => {
         axios.get(`/user-data/${id}`)
             .then((response) => {
@@ -54,30 +56,42 @@ export default function UserList({users, countries}) {
                             <TableCell align="right"><b>Actions</b></TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {users.map((row) => (
-                            <TableRow
-                                key={row.name}
-                                sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                                onClick={() => {
-                                    alert(row.id)
-                                }}
-                            >
-                                <TableCell component="th" scope="row">
-                                    {row.id}
-                                </TableCell>
-                                <TableCell align="right">{row.name}</TableCell>
-                                <TableCell align="right">{row.date_of_birth}</TableCell>
-                                <TableCell align="right">{row.country}</TableCell>
-                                <TableCell align="right">
-                                    <ButtonGroup variant="text" aria-label="Basic button group">
-                                        <Button onClick={(event) => handleEditClick(event, row.id)}><EditIcon/></Button>
-                                        <Button onClick={(event) => handleRemoveClick(event, row.id)}><DeleteIcon/></Button>
-                                    </ButtonGroup>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+                    {
+                        hasUsers
+                            ?
+                            <TableBody>
+                                {users.map((row) => (
+                                    <TableRow
+                                        key={row.name}
+                                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                                        onClick={() => {
+                                            alert(row.id)
+                                        }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {row.id}
+                                        </TableCell>
+                                        <TableCell align="right">{row.name}</TableCell>
+                                        <TableCell align="right">{row.date_of_birth}</TableCell>
+                                        <TableCell align="right">{row.country}</TableCell>
+                                        <TableCell align="right">
+                                            <ButtonGroup variant="text" aria-label="Basic button group">
+                                                <Button onClick={(event) => handleEditClick(event, row.id)}><EditIcon/></Button>
+                                                <Button onClick={(event) => handleRemoveClick(event, row.id)}><DeleteIcon/></Button>
+                                            </ButtonGroup>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                            :
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={5} align='center'>
+                                        No Users Found
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                    }
                 </Table>
             </TableContainer>
             <EditUserForm
